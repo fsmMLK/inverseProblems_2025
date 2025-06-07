@@ -1,0 +1,9 @@
+name: python_312_invProblems_2025
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - matplotlib
+  - numpy
+  - scipy
