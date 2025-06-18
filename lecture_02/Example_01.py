@@ -3,6 +3,14 @@ import matplotlib.pyplot as plt
 from scipy import signal as scipySignal
 from scipy import linalg as scipyLinalg
 
+p=np.array([1,2,3])
+f=np.array([1,2,3,4,5,6])
+
+print(scipySignal.convolve(f, p, mode='full'))
+print(scipySignal.convolve(f, p, mode='valid'))
+print(scipySignal.convolve(f, p, mode='same'))
+convMtx = scipyLinalg.convolution_matrix(p, len(f), mode='same')
+
 # Step 1: Define the signal f in R^100
 f = np.zeros(100)
 f[24:75 + 1] = 1.0  # 25 to 75 inclusive (Python index starts at 0)
