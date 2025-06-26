@@ -7,7 +7,7 @@ s,t = sympy.symbols('s,t')
 # ===================================
 # legendre polynomials of degrees 0 to 3 for w(t) in the interval [0,1]
 # ===================================
-maxOrder=4
+maxOrder=4 # maximum order of the polynomial basis
 dimBase=maxOrder+1
 phiBase=[]
 psiBase=[]
@@ -38,12 +38,14 @@ GR=(t**2)/2*(-t/3+s)  #s>t
 # ===================================
 # load
 # ===================================
-g=1;
-EI=1;
+g=1; # constant load
+EI=1; # flexural rigidity
 
 # ===================================
-# assemble the system
+# assemble the system's matrix and right-hand side
 # ===================================
+
+# 1- build the system matrix
 A=sympy.matrices.zeros(dimBase,dimBase)
 
 #integrations over t
@@ -59,27 +61,33 @@ for i in range(dimBase):
     for j in range(dimBase):
         A[i,j] = sympy.integrate(psiBase[i]*(IR[j]+IL[j]), (s,0,1))
 
-# build the right-hand side
+# 2- build the right-hand side
 b=sympy.matrices.zeros(1,dimBase)
 
 #integrations over s
 for i in range(dimBase):
     b[i] = sympy.integrate(psiBase[i]*g, (s, 0, 1))/EI
 
-if True:
+# ===================================
+# Solve the system
+# ===================================
+numpySolution = True  # set to False for numpy solution
+regularize=False # add regularization to the solution. for numpy solution only
+if numpySolution:
     #numpy solution
     Anp = np.array(A.tolist()).astype(np.float64)
     bnp = np.array(b.tolist()).astype(np.float64)
     xnp = np.linalg.solve((Anp), bnp.T).flatten()
-    print(np.linalg.cond(Anp))
+    print("condition number of A: ", np.linalg.cond(Anp))
+    x = xnp
+    if regularize:
+        #regularized solution
+        Lamb=1e0
+        M=Anp.T@Anp+Lamb*np.eye(Anp.shape[1])
+        N=Anp.T@bnp.T
+        xnpReg= np.linalg.lstsq(M, N, rcond=None)[0].flatten()
 
-    #regularized solution
-    Lamb=1e-0
-    M=Anp.T@Anp+Lamb*np.eye(Anp.shape[1])
-    N=Anp.T@bnp.T
-    xnpReg= np.linalg.lstsq(M, N, rcond=None)[0].flatten()
-
-    x=xnpReg
+        x=xnpReg
 else:
     #symbolic solution
     x=sympy.linsolve([A,b])
@@ -87,7 +95,7 @@ else:
     x=[ elem.evalf() for elem in x]
 
 # ===================================
-#build solution from the
+# build solution function w(t)
 # ===================================
 w=0
 for i in range(dimBase):
@@ -97,7 +105,8 @@ w=w.evalf()
 w= sympy.simplify(w)
 
 coefs= np.array(sympy.Poly(w, s).coeffs())
-#coefs/=coefs[0]
+coefs_exact=np.array([1/24, -4/24, 6/24,0,0])
+print('Exact Solution: (%f) x^4 + (%f) x^3 + (%f)x^2 + (%f)x + (%f)' % (1/24, -4/24, 6/24, 0, 0))
 print('Coefficient : ', coefs)
-print('Coefficient  normalized: ', coefs/coefs[0])
+print('Relative error (%) ', np.divide(coefs[:3]-coefs_exact[:3],coefs_exact[:3])*100)
 print('fim!')
