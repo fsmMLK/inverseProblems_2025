@@ -2,16 +2,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import linalg as scipyLinalg
 
-'''
+"""
 This example explores 1D signal convolution and deconvolution using Python. It begins by constructing a simple rectangular signal and a normalized 
 point spread function (PSF). The convolution is performed both via built-in functions and noise is added to the resulting data. The example then 
 addresses the inverse problem, demonstrating naive inversion and highlighting its sensitivity to noise. Singular value decomposition (SVD) and 
 Picard plots are used to analyze the stability and conditioning of the inversion.
 
 Fernando Moura, 2025
-'''
+"""
 
-# Step 1: Define the signal f in R^100
+"""## Step 1: Define the signal $f\in R^{100}$"""
+
 f = np.zeros(100)
 f[24:75] = np.linspace(0, 50, 51) / 50  # 25 to 75 inclusive (Python index starts at 0)
 
@@ -24,14 +25,17 @@ plt.ylabel('Amplitude')
 plt.grid(True)
 plt.show()
 
-# Step 2: Define the point spread function p. ensure p has odd length
-p = np.array([1, 2, 3, 2, 1], dtype=float)
+"""## Step 2: Define the point spread function p."""
+
+p = np.array([1, 2, 3, 2, 1], dtype=float) #  ensure p has odd length
 p /= p.sum()  # Normalize
 
-# Step 3: Convolution using convolution matrix (convmtx)
+"""## Step 3: Convolution using convolution matrix (convmtx)"""
+
 A = scipyLinalg.convolution_matrix(p, len(f), mode='same')
 
-# Step 4 and 5: Naive inversion.
+"""## Steps 4, 5, and 6: Naive inversion."""
+
 m = A @ f  # Convolve f with p
 f_naive = scipyLinalg.solve(A, m)  # Naive inversion, no noise
 
@@ -57,8 +61,8 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+"""## Step 7: Compute SVD of A"""
 
-# Step 7: Compute SVD of A
 U, S, Vt = scipyLinalg.svd(A)
 
 # Plot singular values
@@ -70,7 +74,8 @@ plt.ylabel('Singular Value (log scale)')
 plt.grid(True)
 plt.show()
 
-# Step 8: Compute Picard coefficients |u_i^T m| / sigma_i for the case of no noise
+"""## Step 8: Create a discrete Picard plot for $m$, $m_{\delta1}$, and  $m_{\delta2}$"""
+
 UTb = np.abs(U.T @ m)  # |u_i^T m|
 picard_coeffs = UTb / S  # |u_i^T m| / sigma_i
 
