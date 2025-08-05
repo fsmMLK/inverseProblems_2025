@@ -4,7 +4,7 @@ from scipy import linalg as scipyLinalg
 
 # This file is for experimenting with deconvolution with two different signals.
 
-# Step 1: create two different signals f1 and f2, one smooth and one spiky.
+"""# Step 1: create two different signals f1 and f2, one smooth and one spiky."""
 # Choose the dimension of the unknown vector
 N = 256
 
@@ -34,7 +34,7 @@ plt.axis([1, N, 0, 1.1])
 plt.title('Spiky signal f_2')
 plt.show()
 
-# Step 2: Construct the PSF (Point Spread Function) for the convolution and convolution matrix.
+"""# Step 2: Construct the PSF (Point Spread Function) for the convolution and convolution matrix."""
 PSF = np.array([1, 1, 1])
 for i in range(3):
     PSF = np.convolve(PSF, PSF) # this ensures the kernel is smooth
@@ -53,7 +53,7 @@ plt.show()
 #convolution matrix
 A = scipyLinalg.convolution_matrix(PSF, N, mode='same')
 
-# Step 3: Compute SVD
+"""# Step 3: Compute SVD"""
 U, svals, Vh = scipyLinalg.svd(A, full_matrices=False)
 V = Vh.T
 S = np.diag(svals)
@@ -70,7 +70,7 @@ plt.xlim([1, N])
 plt.title('Singular values')
 plt.show()
 
-# Step 4: Construct convolved signals and noisy data, including inverse crime
+"""# Step 4: Construct convolved signals and noisy data, including inverse crime"""
 # The "data," with inverse crime
 m1 = A @ f1
 m2 = A @ f2
@@ -94,7 +94,8 @@ plt.axis([1, N, 0, 1.1])
 plt.title('Noisy data of signal 2')
 plt.show()
 
-# Step 5: Reconstruct the signals using naive inversion
+"""# Step 5: Reconstruct the signals using naive inversion"""
+
 rec1 = scipyLinalg.inv(A) @ mn1
 rec2 = scipyLinalg.inv(A) @ mn2
 
@@ -111,7 +112,7 @@ plt.plot(rec2, 'b')
 plt.xlim([1, N])
 plt.show()
 
-# Step 6: Reconstruct the signals using truncated SVD (TSVD)
+"""# Step 6: Reconstruct the signals using truncated SVD (TSVD)"""
 r_alpha = 64
 Sralpha = np.zeros(S.T.shape)
 svals_ralpha = svals[:r_alpha]
