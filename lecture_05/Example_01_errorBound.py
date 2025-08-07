@@ -1,12 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.testing.compare import save_diff_image
 from scipy import signal as scipySignal
 from scipy import linalg as scipyLinalg
 
-showImages=False
+showImages=True
 saveImages=True
-plt.rcParams.update({'font.size': 15})
+plt.rcParams.update({'font.size': 18})
 
 def generate_ill_conditioned_system(m, n, condition_number):
     """
@@ -91,7 +90,7 @@ for i,alpha in enumerate(alphas):
             plt.plot(deltas, y1, '--k', label='A+')
             plt.plot(deltas, surface_y2[i,:], 'b', label='R_\alpha')
             plt.plot(intersectPoints[i,0], intersectPoints[i,1], 'ro', zorder=3)
-            plt.plot(deltas[0], linCoef2, 'y*',markersize=12)
+            plt.plot(deltas[0], linCoef2, 'y*',markersize=15, zorder=5)
             plt.title('$\\alpha$=%0.1e' % alpha)
             plt.xlabel('$\\delta$')
             plt.ylabel('Error bound')
@@ -125,7 +124,7 @@ for i,alpha in enumerate(alphas):
         ax.plot(x,y[::-1][i]*np.ones_like(y1), y1, '--k', label='A+')
         ax.plot(x,y[::-1][i]*np.ones_like(y1), surface_y2[i,:], 'b', label='R_\alpha')
         ax.plot(intersectPoints[i,0],y[::-1][i], intersectPoints[i,1], 'ro', zorder=4)
-        ax.plot(x[0],y[::-1][i], surface_y2[i,0], 'y*',markersize=12)
+        ax.plot(x[0],y[::-1][i], surface_y2[i,0], 'y*',markersize=15, zorder=5)
 
         if saveImages:
             plt.savefig('image3D_alpha_%1.2d.svg' % i, format='svg', bbox_inches='tight', transparent=True)
